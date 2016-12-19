@@ -28,8 +28,18 @@
     
     // Make folder.
     // 创建文件夹
-    if (![fileManager fileExistsAtPath:path]) {
-        [fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    BOOL isDir = NO;
+    BOOL isExist = [fileManager fileExistsAtPath:path isDirectory:&isDir];
+//    if (!isExist || !isDir) {
+//        if (isExist) {
+//            [fileManager removeItemAtPath:path error:nil];
+//        }
+    if (!isExist) {
+        NSError *error = nil;
+        BOOL succeed = [fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error];
+        if (!succeed) {
+            NSLog(@"Create directory error: %@", error);
+        }
     }
     
     return path;
@@ -38,7 +48,17 @@
 // cache file Name.
 // 缓存的文件名字
 +(NSString *)suggestFileNameWithURL:(NSURL*)url{
-    return [url.absoluteString.lastPathComponent componentsSeparatedByString:@"?"].firstObject;
+#warning filename maybe is empty!
+    NSString *fileName = [url.absoluteString.lastPathComponent componentsSeparatedByString:@"?"].firstObject;
+    
+    if (fileName.length == 0) {
+        fileName = [url.absoluteString.lastPathComponent componentsSeparatedByString:@"&"].firstObject;
+        fileName = [[fileName componentsSeparatedByString:@"="] lastObject];
+    }
+    if ([fileName componentsSeparatedByString:@"."].count < 2) {
+        fileName = [fileName stringByAppendingString:@".mp4"];
+    }
+    return fileName;
 }
 
 @end

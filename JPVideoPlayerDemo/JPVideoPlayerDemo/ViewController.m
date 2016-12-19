@@ -135,6 +135,12 @@ const CGFloat rowHeight = 210;
                          @"http://120.25.226.186:32812/resources/videos/minion_11.mp4",
                          ];
     
+    NSArray *paths = @[
+                         @"http://media.seenvoice.com/lmZrJNdYbSk2LyvjNobITfSh5a1X",
+                         @"http://media.seenvoice.com/llMW8djlGrKx61nsqP8iYCG9BKbm",
+                         @"http://media.seenvoice.com/lhNjTkLH0NTmg962YEzQRj6AH0hq",
+                         ];
+    self.pathStrings = paths;
     
     // Count all cache size.
     // 计算缓存大小
@@ -145,7 +151,7 @@ const CGFloat rowHeight = 210;
     
     // Clear all cache.
     // 清空缓存
-    // [[JPVideoPlayer sharedInstance]clearAllVideoCache];
+     [[JPVideoPlayer sharedInstance]clearAllVideoCache];
 }
 
 -(void)viewDidAppear:(BOOL)animated{

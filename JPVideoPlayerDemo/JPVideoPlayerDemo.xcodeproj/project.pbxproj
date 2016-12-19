@@ -159,7 +159,7 @@
 				TargetAttributes = {
 					5F6705621DADE88F001EBFAF = {
 						CreatedOnToolsVersion = 8.0;
-						DevelopmentTeam = E9YZ298CQ4;
+						DevelopmentTeam = 9TD5C77UVP;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -323,7 +323,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = E9YZ298CQ4;
+				DEVELOPMENT_TEAM = 9TD5C77UVP;
 				INFOPLIST_FILE = JPVideoPlayerDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lavatea.www;
@@ -335,7 +335,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = E9YZ298CQ4;
+				DEVELOPMENT_TEAM = 9TD5C77UVP;
 				INFOPLIST_FILE = JPVideoPlayerDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lavatea.www;

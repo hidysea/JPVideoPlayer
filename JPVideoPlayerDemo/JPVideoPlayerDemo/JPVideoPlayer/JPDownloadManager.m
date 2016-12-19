@@ -58,6 +58,18 @@
     [self.session invalidateAndCancel];
 }
 
+- (void)getRequestedOffsetFromUrl:(NSURL *)url {
+    NSString * fileName = [JPVideoCachePathTool suggestFileNameWithURL:url];
+    NSString * tempPath = [self getFileCachePath:fileName];
+    NSInputStream *inputStream = [NSInputStream inputStreamWithFileAtPath:tempPath];
+    [inputStream open];
+    
+    long a = pow(2, 12);
+    uint8_t buf[a];
+    NSInteger blength = [inputStream read:buf maxLength:sizeof(buf)];
+    NSData *data = [NSData dataWithBytes:buf length:blength];
+    [inputStream close];
+}
 
 #pragma mark --------------------------------------------------
 #pragma mark NSURLSessionDataDelegate
@@ -120,7 +132,7 @@
         
         // For Test
         // NSLog(@"loading ... 正在下载");
-        //  NSLog(@"Download progress --- %0.2lf", 1.0 * _downLoadingOffset / self.fileLength);
+        // NSLog(@"Download progress --- %0.2lf", 1.0 * _downLoadingOffset / self.fileLength);
         
         if ([self.delegate respondsToSelector:@selector(manager:didReceiveData:downloadOffset:tempFilePath:)]) {
             [self.delegate manager:self didReceiveData:data downloadOffset:_downLoadingOffset tempFilePath:_tempPath];
@@ -175,6 +187,7 @@
     //请求超时：-1001
     //服务器内部错误：-1004
     //找不到服务器：-1003
+    //请求取消：-999
     
     if (error.code == -1001 && !_once) {
         
@@ -200,10 +213,18 @@
 #pragma mark Private
 
 -(NSString *)getFileCachePath{
+#warning suggestFileName maybe is empty!
+    // 如果此处文件名为空，会造成存储临时文件的 文件夹地址 作为 文件地址 进行操作，从而使临时文件夹从 文件夹 属性变成 文件 属性，引起访问此临时文件夹时 出现异常！
+    NSString *path = [self getFileCachePath:self.suggestFileName];
+    return path;
+}
+-(NSString *)getFileCachePath:(NSString *)fileName {
     NSString *path = [JPVideoCachePathTool fileCachePath];
-    path = [path stringByAppendingPathComponent:self.suggestFileName];
+    path = [path stringByAppendingPathComponent:fileName];
     
+#pragma mark -  remove file and recreate file at path; 清除已有文件
     NSFileManager *fileManager = [NSFileManager defaultManager];
+    
     if ([fileManager fileExistsAtPath:path] && !self.once) {
         [fileManager removeItemAtPath:path error:nil];
         [fileManager createFileAtPath:path contents:nil attributes:nil];
@@ -211,6 +232,13 @@
     else {
         [fileManager createFileAtPath:path contents:nil attributes:nil];
     }
+     
+    /*
+    if (![fileManager fileExistsAtPath:path]) {
+        [fileManager createFileAtPath:path contents:nil attributes:nil];
+    }
+     */
+    
     return path;
 }
 
@@ -235,10 +263,13 @@
     // 创建请求
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[actualURLComponents URL] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:20.0];
     
+#pragma mark - next step is support the Download_From_Break
     // fix offset of request
     // 修改请求数据范围
     if (_curOffset > 0 && self.fileLength > 0) {
-        [request addValue:[NSString stringWithFormat:@"bytes=%ld-%ld",(unsigned long)_curOffset, (unsigned long)self.fileLength - 1] forHTTPHeaderField:@"Range"];
+        // self.fileLength = 1024*1024; // 加入只下载1M的数据
+        NSString *bytes = [NSString stringWithFormat:@"bytes=%ld-%ld",(unsigned long)_curOffset, (unsigned long)self.fileLength - 1];
+        [request addValue:bytes forHTTPHeaderField:@"Range"];
     }
     
     // Reset

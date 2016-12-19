@@ -76,6 +76,8 @@
  *  @param loadingRequest 每一小块数据的请求
  */
 -(BOOL)resourceLoader:(AVAssetResourceLoader *)resourceLoader shouldWaitForLoadingOfRequestedResource:(AVAssetResourceLoadingRequest *)loadingRequest{
+    NSLog(@"resourceLoader: %@",resourceLoader);
+    NSLog(@"loadingRequest: %@",loadingRequest);
     
     if (resourceLoader && loadingRequest) {
         [self.pendingRequests addObject:loadingRequest];
@@ -132,6 +134,7 @@
 }
 
 - (BOOL)respondWithDataForRequest:(AVAssetResourceLoadingDataRequest *)dataRequest{
+//    NSLog(@"dataRequest: %@",dataRequest);
     
     long long startOffset = dataRequest.requestedOffset;
     if (dataRequest.currentOffset != 0)
@@ -163,6 +166,9 @@
 #pragma mark JPDownloadManagerDelegate
 
 -(void)manager:(JPDownloadManager *)manager didReceiveData:(NSData *)data downloadOffset:(NSInteger)offset tempFilePath:(NSString *)filePath{
+    // CGFloat downloadProgress = 1.0 * offset / manager.fileLength;
+    // NSLog(@"download progress = %.6f",downloadProgress);
+    
     [self processPendingRequests];
 }
 
